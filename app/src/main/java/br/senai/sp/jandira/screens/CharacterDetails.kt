@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,45 +33,55 @@ import androidx.navigation.compose.rememberNavController
 import br.senai.sp.jandira.model.Character
 import br.senai.sp.jandira.service.RetrofitFactory
 import coil.compose.AsyncImage
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun CharacterDetails(controleNavegacao:NavHostController) {
-    var id by remember {
-        mutableStateOf("")
-    }
+fun CharacterDetails(controleNavegacao: NavHostController, id: String?) {
+    var id = id ?: "0"
+    Log.i("RUBENS", "CharacterDetails: $id")
 
     var character by remember {
         mutableStateOf(br.senai.sp.jandira.model.Character())
     }
+
+//    var search = by remember {
+//        mutabler
+//    }
+
+    var callCharacter = RetrofitFactory().getCharacterService().getCharacterById(id.toInt())
+
+    callCharacter.enqueue(object : Callback<Character> {
+        override fun onResponse(
+            p0: Call<br.senai.sp.jandira.model.Character>,
+            response: Response<br.senai.sp.jandira.model.Character>
+        ) {
+            character = response.body()!!
+        }
+
+        override fun onFailure(
+            p0: Call<br.senai.sp.jandira.model.Character>,
+            response: Throwable
+        ) {
+        }
+
+    })
+
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = Color(0xFFD1AC71)
     ) {
-        Column (
+        Column(
             modifier = Modifier.padding(24.dp)
-        ){
-            OutlinedTextField(value = "", onValueChange = {},modifier= Modifier.fillMaxWidth(),
+        ) {
+            OutlinedTextField(
+                value = "", onValueChange = {}, modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     IconButton(onClick = {
-                        val callCharacter = RetrofitFactory().getCharacterService().getCharacterById(id.toInt())
 
-                        callCharacter.enqueue(object : Callback<Character> {
-                            override fun onResponse(p0: Call<br.senai.sp.jandira.model.Character>, response: Response<br.senai.sp.jandira.model.Character>) {
-                                if(response.code()== 404){
-                                    character = br.senai.sp.jandira.model.Character()
-                                } else {
-                                    character = response.body()!!
-                                }
-                            }
-
-                            override fun onFailure(p0: Call<br.senai.sp.jandira.model.Character>, response: Throwable) {
-                            }
-
-                        })
                     }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
@@ -80,11 +91,14 @@ fun CharacterDetails(controleNavegacao:NavHostController) {
                 )
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Card (
+            Card(
                 modifier = Modifier.size(120.dp), shape = CircleShape
             )
             {
-                AsyncImage(model = character.image, contentDescription = "", modifier = Modifier.fillMaxSize()
+                AsyncImage(
+                    model = character.image,
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
             Text(text = character.name)
@@ -95,5 +109,5 @@ fun CharacterDetails(controleNavegacao:NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-    CharacterDetails(controleNavegacao = rememberNavController())
+    CharacterDetails(controleNavegacao = rememberNavController(), id = "0")
 }

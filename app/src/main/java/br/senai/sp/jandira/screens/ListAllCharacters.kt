@@ -74,12 +74,13 @@ fun ListAllCharacters(controleNavegacao:NavHostController){
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
-        }
-        LazyColumn {
-            items(characterList){
-                characterCard(controleNavegacao, it)
+            LazyColumn {
+                items(characterList){
+                    characterCard(controleNavegacao, it)
+                }
             }
         }
+
     }
 }
 
@@ -88,8 +89,7 @@ fun characterCard(controleNavegacao: NavHostController, character: Character){
 
     Card(modifier = Modifier
         .clickable {
-            controleNavegacao.navigate("")
-
+            controleNavegacao.navigate("DetalhesPersonagem/${character.id}")
         }
         .padding(bottom = 4.dp)
         .fillMaxWidth()

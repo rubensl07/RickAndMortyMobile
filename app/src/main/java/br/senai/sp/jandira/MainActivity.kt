@@ -34,9 +34,12 @@ class MainActivity : ComponentActivity() {
                     startDestination = "ListaPersonagens"
                 ){
                     composable(route = "ListaPersonagens") { ListAllCharacters(controleNavegacao)}
-//                    composable(route = "DetalhesPersonagem/{id}", arguments = ListOf(navArgument("characterId"){type = NavType.IntType})) { backStackEntry -> CharacterDetails(controleNavegacao, backStackEntry.arguments?.getInt("id") ?: 0) }
+
+                    composable(route = "DetalhesPersonagem/{id}"){ backStackEntry ->
+                        val id = backStackEntry.arguments?.getString("id")
+                        CharacterDetails(controleNavegacao, id)
+                    }
                 }
-                ListAllCharacters(controleNavegacao)
             }}
         }
     }
